@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Owner Dashboard - DriveIndia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0f;
+      color: #fff;
+      min-height: 100vh
+    }
+
+    :root {
+      --red: #e63946;
+      --blue: #00b4d8;
+      --gold: #ffd60a;
+      --card: #13131a;
+      --green: #22c55e;
+      --orange: #fb923c
+    }
+
+    #loginScreen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0a0f, #1a0a1a, #0a1a2a)
+    }
+
+    .login-box {
+      background: #13131a;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 24px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      text-align: center
+    }
+
+    .login-logo {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--red), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: .3rem
+    }
+
+    .login-sub {
+      color: rgba(255, 255, 255, .4);
+      font-size: .9rem;
+      margin-bottom: 2rem
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+      text-align: left
+    }
+
+    .form-group label {
+      display: block;
+      color: rgba(255, 255, 255, .6);
+      font-size: .85rem;
+      margin-bottom: .4rem;
+      font-weight: 500
+    }
+
+    .form-group input {
+      width: 100%;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .1);
+      color: #fff;
+      padding: .8rem 1rem;
+      border-radius: 10px;
+      font-size: .95rem;
+      font-family: inherit;
+      transition: .3s
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--red);
+      background: rgba(230, 57, 70, .05)
+    }
+
+    .btn-login {
+      width: 100%;
+      background: linear-gradient(135deg, var(--red), #c1121f);
+      color: #fff;
+      border: none;
+      padding: .9rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .3s;
+      margin-top: .5rem
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(230, 57, 70, .4)
+    }
+
+    .login-err {
+      color: #f87171;
+      font-size: .85rem;
+      margin-top: .8rem;
+      display: none
+    }
+
+    #dashboard {
+      display: none
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      background: rgba(10, 10, 15, .95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .nav-logo {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--red), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem
+    }
+
+    .owner-badge {
+      background: rgba(230, 57, 70, .15);
+      border: 1px solid rgba(230, 57, 70, .3);
+      color: var(--red);
+      padding: .3rem 1rem;
+      border-radius: 50px;
+      font-size: .8rem;
+      font-weight: 600
+    }
+
+    .btn-logout {
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .1);
+      color: rgba(255, 255, 255, .7);
+      padding: .4rem 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: .85rem;
+      font-weight: 500;
+      transition: .3s
+    }
+
+    .btn-logout:hover {
+      background: rgba(230, 57, 70, .2);
+      border-color: var(--red);
+      color: var(--red)
+    }
+
+    .main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: .4rem
+    }
+
+    .page-title span {
+      background: linear-gradient(135deg, var(--red), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .page-sub {
+      color: rgba(255, 255, 255, .4);
+      font-size: .9rem;
+      margin-bottom: 2rem
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: .3s
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(230, 57, 70, .3)
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: .6rem
+    }
+
+    .stat-val {
+      font-size: 2rem;
+      font-weight: 800
+    }
+
+    .stat-val.green {
+      color: var(--green)
+    }
+
+    .stat-val.red {
+      color: var(--red)
+    }
+
+    .stat-val.gold {
+      color: var(--gold)
+    }
+
+    .stat-val.blue {
+      color: var(--blue)
+    }
+
+    .stat-label {
+      color: rgba(255, 255, 255, .4);
+      font-size: .8rem;
+      margin-top: .2rem
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      flex-wrap: gap
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700
+    }
+
+    .tabs {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem
+    }
+
+    .tab {
+      padding: .5rem 1.2rem;
+      border-radius: 50px;
+      border: 2px solid rgba(255, 255, 255, .12);
+      background: transparent;
+      color: rgba(255, 255, 255, .6);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: .85rem;
+      transition: .3s
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, var(--red), #c1121f);
+      border-color: transparent;
+      color: #fff
+    }
+
+    .bookings-table {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .07)
+    }
+
+    .table-head {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1fr 1fr;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: rgba(255, 255, 255, .04);
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      font-size: .8rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .4);
+      text-transform: uppercase;
+      letter-spacing: .05em
+    }
+
+    .table-row {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1fr 1fr;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      transition: .2s;
+      align-items: center
+    }
+
+    .table-row:last-child {
+      border-bottom: none
+    }
+
+    .table-row:hover {
+      background: rgba(255, 255, 255, .03)
+    }
+
+    .car-cell {
+      font-weight: 600;
+      font-size: .9rem
+    }
+
+    .car-cell small {
+      display: block;
+      color: rgba(255, 255, 255, .4);
+      font-size: .78rem;
+      font-weight: 400
+    }
+
+    .cust-cell {
+      font-size: .88rem
+    }
+
+    .cust-cell small {
+      color: rgba(255, 255, 255, .4);
+      font-size: .78rem
+    }
+
+    .date-cell {
+      font-size: .82rem;
+      color: rgba(255, 255, 255, .7)
+    }
+
+    .status-badge {
+      padding: .25rem .8rem;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 700;
+      display: inline-block
+    }
+
+    .status-active {
+      background: rgba(34, 197, 94, .15);
+      color: var(--green);
+      border: 1px solid rgba(34, 197, 94, .3)
+    }
+
+    .status-upcoming {
+      background: rgba(0, 180, 216, .15);
+      color: var(--blue);
+      border: 1px solid rgba(0, 180, 216, .3)
+    }
+
+    .status-completed {
+      background: rgba(255, 255, 255, .07);
+      color: rgba(255, 255, 255, .4);
+      border: 1px solid rgba(255, 255, 255, .1)
+    }
+
+    .status-cancelled {
+      background: rgba(230, 57, 70, .15);
+      color: var(--red);
+      border: 1px solid rgba(230, 57, 70, .3)
+    }
+
+    .action-btn {
+      background: rgba(37, 211, 102, .15);
+      border: 1px solid rgba(37, 211, 102, .3);
+      color: #25d366;
+      padding: .3rem .8rem;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: .2s
+    }
+
+    .action-btn:hover {
+      background: rgba(37, 211, 102, .25)
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem
+    }
+
+    .calendar-card {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 16px;
+      padding: 1.5rem
+    }
+
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem
+    }
+
+    .cal-title {
+      font-weight: 700;
+      font-size: 1rem
+    }
+
+    .cal-nav {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, .1);
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: .9rem;
+      transition: .2s
+    }
+
+    .cal-nav:hover {
+      background: var(--red);
+      border-color: var(--red)
+    }
+
+    .cal-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      text-align: center
+    }
+
+    .cal-day-name {
+      font-size: .7rem;
+      color: rgba(255, 255, 255, .3);
+      padding: .3rem 0;
+      font-weight: 600
+    }
+
+    .cal-day {
+      font-size: .8rem;
+      padding: .35rem;
+      border-radius: 6px;
+      cursor: default;
+      transition: .2s
+    }
+
+    .cal-day.empty {
+      visibility: hidden
+    }
+
+    .cal-day.today {
+      background: rgba(255, 255, 255, .1);
+      font-weight: 700
+    }
+
+    .cal-day.booked {
+      background: rgba(230, 57, 70, .25);
+      color: var(--red);
+      font-weight: 700;
+      border: 1px solid rgba(230, 57, 70, .4)
+    }
+
+    .cal-day.available {
+      background: rgba(34, 197, 94, .1);
+      color: var(--green)
+    }
+
+    .legend {
+      display: flex;
+      gap: 1.2rem;
+      margin-top: 1rem;
+      flex-wrap: wrap
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .8rem;
+      color: rgba(255, 255, 255, .5)
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px
+    }
+
+    .legend-dot.booked {
+      background: rgba(230, 57, 70, .5)
+    }
+
+    .legend-dot.available {
+      background: rgba(34, 197, 94, .3)
+    }
+
+    .no-bookings {
+      text-align: center;
+      padding: 3rem;
+      color: rgba(255, 255, 255, .3)
+    }
+
+    .no-bookings .icon {
+      font-size: 3rem;
+      margin-bottom: 1rem
+    }
+
+    .clear-btn {
+      background: rgba(230, 57, 70, .1);
+      border: 1px solid rgba(230, 57, 70, .2);
+      color: var(--red);
+      padding: .4rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: .82rem;
+      font-weight: 600;
+      transition: .2s
+    }
+
+    .clear-btn:hover {
+      background: rgba(230, 57, 70, .2)
+    }
+
+    .cancel-btn {
+      background: rgba(230, 57, 70, .12);
+      border: 1px solid rgba(230, 57, 70, .3);
+      color: #f87171;
+      padding: .3rem .8rem;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .2s
+    }
+
+    .cancel-btn:hover {
+      background: rgba(230, 57, 70, .3);
+      color: #fff
+    }
+
+    .confirm-btn {
+      background: rgba(34, 197, 94, .15);
+      border: 1px solid rgba(34, 197, 94, .35);
+      color: #22c55e;
+      padding: .3rem .8rem;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .2s
+    }
+
+    .confirm-btn:hover {
+      background: rgba(34, 197, 94, .3);
+      color: #fff
+    }
+
+    .status-pending {
+      background: rgba(255, 214, 10, .12);
+      color: #ffd60a;
+      border: 1px solid rgba(255, 214, 10, .3)
+    }
+
+    .amount-cell {
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--gold)
+    }
+
+    .amount-cell small {
+      display: block;
+      color: rgba(255, 255, 255, .4);
+      font-size: .75rem;
+      font-weight: 400
+    }
+
+    @media(max-width:768px) {
+
+      .table-head,
+      .table-row {
+        grid-template-columns: 1.5fr 1fr 1fr;
+      }
+
+      .table-head>*:nth-child(n+4),
+      .table-row>*:nth-child(n+4) {
+        display: none
+      }
+
+      .main {
+        padding: 1rem
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loginScreen">
+    <div class="login-box">
+      <div class="login-logo">DriveIndia</div>
+      <div class="login-sub">Owner Portal — Secure Login</div>
+      <div class="form-group"><label>Username</label><input type="text" id="usr" placeholder="owner"
+          autocomplete="username"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="pwd" placeholder="••••••••"
+          autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn-login" onclick="doLogin()">🔐 Login to Dashboard</button>
+      <div class="login-err" id="loginErr">❌ Invalid username or password</div>
+    </div>
+  </div>
+
+  <div id="dashboard">
+    <nav>
+      <div class="nav-logo">DriveIndia <span style="font-size:.9rem;color:rgba(255,255,255,.4);font-weight:400">| Owner
+          Dashboard</span></div>
+      <div class="nav-right">
+        <span class="owner-badge">👤 Owner</span>
+        <button class="btn-logout" onclick="doLogout()">Logout</button>
+      </div>
+    </nav>
+    <div class="main">
+      <div class="page-title">Booking <span>Dashboard</span></div>
+      <div class="page-sub" id="lastRefresh">Loading bookings...</div>
+
+      <div class="stats-row" id="statsRow"></div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('all',this)">All Bookings</button>
+        <button class="tab" onclick="switchTab('pending',this)" id="tabPending">⏳ Pending</button>
+        <button class="tab" onclick="switchTab('active',this)">🟢 Active</button>
+        <button class="tab" onclick="switchTab('upcoming',this)">🔵 Upcoming</button>
+        <button class="tab" onclick="switchTab('completed',this)">⚪ Completed</button>
+        <button class="tab" onclick="switchTab('cancelled',this)">❌ Cancelled</button>
+        <button class="tab" onclick="switchTab('calendar',this)">📅 Calendar View</button>
+        <button class="clear-btn" onclick="clearAll()" style="margin-left:auto">🗑 Clear All</button>
+      </div>
+
+      <div id="tableView">
+        <div class="bookings-table">
+          <div class="table-head">
+            <div>Car</div>
+            <div>Customer</div>
+            <div>Pickup</div>
+            <div>Return</div>
+            <div>💰 Amount</div>
+            <div>Status</div>
+            <div>Action</div>
+          </div>
+          <div id="bookingsList"></div>
+        </div>
+      </div>
+
+      <div id="calendarView" style="display:none">
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-dot booked"></div>Booked
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot available"></div>Available
+          </div>
+        </div>
+        <div class="calendar-grid" id="calGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CREDS = { user: "owner", pass: "driveindia123" };
+    let currentTab = "all";
+
+    function doLogin() {
+      const u = document.getElementById("usr").value.trim();
+      const p = document.getElementById("pwd").value.trim();
+      if (u === CREDS.user && p === CREDS.pass) {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        loadDashboard();
+      } else {
+        document.getElementById("loginErr").style.display = "block";
+      }
+    }
+    function doLogout() {
+      document.getElementById("dashboard").style.display = "none";
+      document.getElementById("loginScreen").style.display = "flex";
+      document.getElementById("usr").value = "";
+      document.getElementById("pwd").value = "";
+    }
+
+    function getBookings() {
+      return JSON.parse(localStorage.getItem("driveIndia_bookings") || "[]");
+    }
+    function getDateStatus(pickup, ret) {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const p = new Date(pickup); const r = new Date(ret);
+      if (r < today) return "completed";
+      if (p <= today && r >= today) return "active";
+      return "upcoming";
+    }
+    function getStatus(b) {
+      if (b.status === "pending") return "pending";
+      if (b.status === "cancelled") return "cancelled";
+      if (b.status === "confirmed") return getDateStatus(b.pickup, b.ret);
+      return getDateStatus(b.pickup, b.ret);
+    }
+    function loadDashboard() {
+      const bookings = getBookings();
+      const now = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+      document.getElementById("lastRefresh").textContent = "Last refreshed: " + now + " | " + bookings.length + " total bookings";
+      // Stats
+      const total = bookings.length;
+      const pending = bookings.filter(b => b.status === "pending").length;
+      const active = bookings.filter(b => b.status === "confirmed" && getDateStatus(b.pickup, b.ret) === "active").length;
+      const upcoming = bookings.filter(b => b.status === "confirmed" && getDateStatus(b.pickup, b.ret) === "upcoming").length;
+      const completed = bookings.filter(b => b.status === "confirmed" && getDateStatus(b.pickup, b.ret) === "completed").length;
+      const cancelled = bookings.filter(b => b.status === "cancelled").length;
+      // Highlight pending tab if any
+      const pt = document.getElementById("tabPending");
+      if (pt) pt.textContent = (pending > 0 ? `⏳ Pending (${pending})` : `⏳ Pending`);
+      const totalRevenue = bookings.filter(b => b.status === "confirmed").reduce((sum, b) => sum + calcTotalAmount(b.price, b.pickup, b.ret).raw, 0);
+      document.getElementById("statsRow").innerHTML = `
+    <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-val gold">${total}</div><div class="stat-label">Total Bookings</div></div>
+    <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-val" style="color:#ffd60a">${pending}</div><div class="stat-label">Awaiting Decision</div></div>
+    <div class="stat-card"><div class="stat-icon">🚗</div><div class="stat-val green">${active}</div><div class="stat-label">Currently Active</div></div>
+    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val blue">${upcoming}</div><div class="stat-label">Upcoming</div></div>
+    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" style="color:rgba(255,255,255,.4)">${completed}</div><div class="stat-label">Completed</div></div>
+    <div class="stat-card"><div class="stat-icon">❌</div><div class="stat-val red">${cancelled}</div><div class="stat-label">Cancelled</div></div>
+    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-val gold">₹${totalRevenue.toLocaleString("en-IN")}</div><div class="stat-label">Total Revenue</div></div>`;
+
+      renderTab(currentTab);
+    }
+    function calcTotalAmount(priceStr, pickup, ret) {
+      if (!priceStr || priceStr === "—" || !pickup || !ret) return { text: "Contact for price", raw: 0 };
+      const numMatch = priceStr.replace(/[₹,]/g, "").match(/[\d]+/);
+      if (!numMatch) return { text: "Contact for price", raw: 0 };
+      const ratePerDay = parseInt(numMatch[0]);
+      const d1 = new Date(pickup), d2 = new Date(ret);
+      const days = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+      const total = ratePerDay * days;
+      return { text: `₹${total.toLocaleString("en-IN")}`, days: days, rate: ratePerDay, raw: total };
+    }
+    function formatWhatsAppPhone(phone) {
+      if (!phone) return "";
+      let clean = phone.replace(/\D/g, "");
+      if (clean.length === 10) {
+        clean = "91" + clean;
+      }
+      return clean;
+    }
+    function confirmBooking(bookingId, carName, custName, custPhone, pickup, ret) {
+      // Update status in localStorage
+      const all = JSON.parse(localStorage.getItem("driveIndia_bookings") || "[]");
+      const idx = all.findIndex(b => b.id === bookingId);
+      if (idx > -1) all[idx].status = "confirmed";
+      localStorage.setItem("driveIndia_bookings", JSON.stringify(all));
+      // Send WhatsApp confirmation
+      const msg = encodeURIComponent(`Hi ${custName},\n\n✅ *Your Booking is Confirmed!*\n\n🚗 *Car:* ${carName}\n📅 *From:* ${pickup}\n📅 *To:* ${ret}\n\nThank you for choosing DriveIndia! Please be ready at your pickup location on time.\n\n📞 DriveIndia Support: +91 90804 02584`);
+      window.open("https://wa.me/" + formatWhatsAppPhone(custPhone) + "?text=" + msg, "_blank");
+      setTimeout(() => loadDashboard(), 800);
+    }
+    function cancelBooking(bookingId, carName, custName, custPhone, pickup, ret) {
+      const msg = encodeURIComponent(`Hi ${custName},\n\n❌ *Your Booking Has Been Cancelled*\n\n🚗 *Car:* ${carName}\n📅 *From:* ${pickup}\n📅 *To:* ${ret}\n\nWe are sorry, the owner is not available to rent this car for the selected dates.\n\nPlease contact us to reschedule or choose another vehicle.\n\n📞 DriveIndia Support: +91 90804 02584`);
+      window.open("https://wa.me/" + formatWhatsAppPhone(custPhone) + "?text=" + msg, "_blank");
+      const all = JSON.parse(localStorage.getItem("driveIndia_bookings") || "[]");
+      const idx = all.findIndex(b => b.id === bookingId);
+      if (idx > -1) all[idx].status = "cancelled";
+      localStorage.setItem("driveIndia_bookings", JSON.stringify(all));
+      setTimeout(() => loadDashboard(), 800);
+    }
+    function renderTab(tab) {
+      const bookings = getBookings();
+      let filtered = bookings;
+      if (tab === "pending") filtered = bookings.filter(b => b.status === "pending");
+      else if (tab === "active") filtered = bookings.filter(b => b.status === "confirmed" && getDateStatus(b.pickup, b.ret) === "active");
+      else if (tab === "upcoming") filtered = bookings.filter(b => b.status === "confirmed" && getDateStatus(b.pickup, b.ret) === "upcoming");
+      else if (tab === "completed") filtered = bookings.filter(b => b.status === "confirmed" && getDateStatus(b.pickup, b.ret) === "completed");
+      else if (tab === "cancelled") filtered = bookings.filter(b => b.status === "cancelled");
+      if (tab === "calendar") {
+        document.getElementById("tableView").style.display = "none";
+        document.getElementById("calendarView").style.display = "block";
+        renderCalendar(bookings.filter(b => b.status === "confirmed"));
+        return;
+      }
+      document.getElementById("tableView").style.display = "block";
+      document.getElementById("calendarView").style.display = "none";
+      const list = document.getElementById("bookingsList");
+      if (!filtered.length) {
+        list.innerHTML = `<div class="no-bookings"><div class="icon">📭</div><div>No bookings found</div></div>`;
+        return;
+      }
+      list.innerHTML = filtered.slice().reverse().map(b => {
+        const st = getStatus(b);
+        const badge = st === "pending" ? `<span class="status-badge status-pending">⏳ Pending</span>` :
+          st === "cancelled" ? `<span class="status-badge status-cancelled">❌ Cancelled</span>` :
+            st === "active" ? `<span class="status-badge status-active">🟢 Active</span>` :
+              st === "upcoming" ? `<span class="status-badge status-upcoming">🔵 Upcoming</span>` :
+                `<span class="status-badge status-completed">⚪ Done</span>`;
+        const safeId = b.id;
+        const safeCar = b.car.replace(/'/g, "\\'");
+        const safeCust = b.cust.replace(/'/g, "\\'");
+        const safePhone = b.phone;
+        let actions = "";
+        if (st === "pending") {
+          actions = `<button class="confirm-btn" onclick="confirmBooking(${safeId},'${safeCar}','${safeCust}','${safePhone}','${b.pickup}','${b.ret}')">✅ Confirm</button><button class="cancel-btn" onclick="cancelBooking(${safeId},'${safeCar}','${safeCust}','${safePhone}','${b.pickup}','${b.ret}')">❌ Reject</button>`;
+        } else if (st === "cancelled") {
+          actions = `<span style='color:#f87171;font-size:.78rem;font-weight:600'>Cancelled</span>`;
+        } else if (st !== "completed") {
+          const waReply = encodeURIComponent(`Hi ${b.cust}, your booking for ${b.car} from ${b.pickup} to ${b.ret} is confirmed! - DriveIndia`);
+          actions = `<a class="action-btn" href="https://wa.me/${formatWhatsAppPhone(safePhone)}?text=${waReply}" target="_blank">💬 Reply</a><button class="cancel-btn" onclick="cancelBooking(${safeId},'${safeCar}','${safeCust}','${safePhone}','${b.pickup}','${b.ret}')">❌ Cancel</button>`;
+        } else {
+          actions = `<span style='color:rgba(255,255,255,.2);font-size:.78rem'>—</span>`;
+        }
+        const amt = calcTotalAmount(b.price, b.pickup, b.ret);
+        const amtHtml = amt.days ? `<div class="amount-cell">${amt.text}<small>${amt.days} day${amt.days > 1 ? 's' : ''} × ₹${amt.rate.toLocaleString("en-IN")}/day</small></div>` : `<div class="amount-cell" style="color:rgba(255,255,255,.35);font-weight:400;font-size:.8rem">${amt.text}</div>`;
+        return `<div class="table-row">
+      <div class="car-cell">${b.car}<small>${b.transmission || ""} • ${b.trip || "Self Drive"} • ${b.city || ""}</small></div>
+      <div class="cust-cell">${b.cust}<small>${b.phone}</small></div>
+      <div class="date-cell">${b.pickup}</div>
+      <div class="date-cell">${b.ret}</div>
+      ${amtHtml}
+      <div>${badge}</div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">${actions}</div>
+    </div>`;
+      }).join("");
+    }
+    function switchTab(tab, el) {
+      currentTab = tab;
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      el.classList.add("active");
+      renderTab(tab);
+    }
+    function renderCalendar(bookings) {
+      const grid = document.getElementById("calGrid");
+      const bookedDates = new Set();
+      bookings.forEach(b => {
+        const s = new Date(b.pickup), e = new Date(b.ret);
+        for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
+          bookedDates.add(d.toISOString().split("T")[0]);
+        }
+      });
+      const now = new Date();
+      let html = "";
+      for (let m = 0; m < 2; m++) {
+        const dt = new Date(now.getFullYear(), now.getMonth() + m, 1);
+        const monthName = dt.toLocaleString("en-IN", { month: "long", year: "numeric" });
+        const daysInMonth = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
+        const firstDay = dt.getDay();
+        let days = "";
+        ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].forEach(d => { days += `<div class="cal-day-name">${d}</div>`; });
+        for (let i = 0; i < firstDay; i++) days += `<div class="cal-day empty"></div>`;
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dateStr = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+          const isToday = dateStr === now.toISOString().split("T")[0];
+          const isBooked = bookedDates.has(dateStr);
+          const isPast = new Date(dateStr) < new Date(now.toISOString().split("T")[0]);
+          let cls = "cal-day";
+          if (isToday) cls += " today";
+          if (isBooked) cls += " booked";
+          else if (!isPast) cls += " available";
+          days += `<div class="${cls}" title="${dateStr}">${d}</div>`;
+        }
+        html += `<div class="calendar-card"><div class="cal-header"><div class="cal-title">${monthName}</div></div><div class="cal-days">${days}</div></div>`;
+      }
+      grid.innerHTML = html;
+    }
+    function clearAll() {
+      if (confirm("Clear all booking records from this device?")) {
+        localStorage.removeItem("driveIndia_bookings");
+        loadDashboard();
+      }
+    }
+    setInterval(loadDashboard, 30000);
+  </script>
+</body>
+
+</html>
